@@ -18,6 +18,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing db: %v", err)
 	}
+	defer db.Close()
+
 	server := handler.NewAPIServer(":8000", db)
 	if err := server.Start(); err != nil {
 		log.Fatalf("error starting server: %v", err)
