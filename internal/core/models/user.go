@@ -23,6 +23,6 @@ type UserStore interface {
 type Payload struct {
 	Name     string `json:"name" validate:"required"`
 	LastName string `json:"lastname" validate:"required"`
-	Email    string `json:"email" validate:"email,required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=5,max=50"`
 }
