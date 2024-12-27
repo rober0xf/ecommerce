@@ -20,9 +20,14 @@ type UserStore interface {
 	CreateUser(user *User) error
 }
 
-type Payload struct {
+type PayloadRegister struct {
 	Name     string `json:"name" validate:"required"`
 	LastName string `json:"lastname" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=5,max=50"`
+}
+
+type PayloadLogin struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
