@@ -1,4 +1,5 @@
--- we need to create our own type
+DROP TYPE IF EXISTS order_status;
+
 CREATE TYPE order_status AS ENUM ('pending', 'completed', 'cancelled');
 
 CREATE TABLE IF NOT EXISTS orders (

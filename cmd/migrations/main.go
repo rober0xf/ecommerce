@@ -3,25 +3,28 @@ package main
 import (
 	"database/sql"
 	"ecommerce/config"
-	"ecommerce/db"
-	"log"
-	"os"
-
+	"fmt"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	//	_ "github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"log"
+	"os"
 )
 
 func main() {
 	config.LoadEnv()
-	dbConfig, err := db.NewDBConfig()
-	if err != nil {
-		log.Fatalf("error loading db config: %v", err)
-	}
+
+	dataSource := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"))
 
 	// temporary connection for migrations
-	db, err := sql.Open("pgx", dbConfig.ConnString())
+	db, err := sql.Open("pgx", dataSource)
 	if err != nil {
 		log.Fatalf("error connecting to migrations db: %v", err)
 	}
