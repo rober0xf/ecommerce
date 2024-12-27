@@ -11,14 +11,17 @@ type MessageError struct {
 	Status  int   `json:"status"`
 }
 
-func WriteError(w http.ResponseWriter, message error, status int) {
+func WriteError(w http.ResponseWriter, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	response := MessageError{Status: status, Message: message}
+	response := map[string]any{
+		"status":  status,
+		"message": message,
+	}
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, fmt.Sprintf(`{"message": "failed to encode error response"}`), http.StatusInternalServerError)
+		http.Error(w, `{"message": "failed to encode error response"}`, http.StatusInternalServerError)
 	}
 }
 
