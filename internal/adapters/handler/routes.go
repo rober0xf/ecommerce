@@ -1,13 +1,16 @@
 package handler
 
 import (
+	"ecommerce/config"
 	"ecommerce/internal/core/models"
 	"ecommerce/internal/core/services"
 	"ecommerce/pkg"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 var ValidateStruct = validator.New()
@@ -47,17 +50,29 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// check if the user exists
 	user, err := h.Store.GetUserByEmail(payload.Email)
-	if err == nil {
+	if err != nil {
+		log.Printf("error: %v", err)
 		pkg.WriteError(w, "user not found", http.StatusBadRequest)
 		return
 	}
 
-	if !services.CheckPassword(user.Password, payload.Password) {
+	if err := services.CheckPassword(user.Password, payload.Password); err != nil {
 		pkg.WriteError(w, "invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	pkg.WriteJSON(w, http.StatusOK, nil)
+	jwtConfig := config.LoadJWTConfig() // load jwt config
+	if jwtConfig == nil {
+		pkg.WriteError(w, "jwt not found", http.StatusInternalServerError)
+		return
+	}
+
+	token, err := services.CreateJWT(*jwtConfig, user.ID) // returns the token as a string
+	if err != nil {
+		pkg.WriteError(w, "unable to create token", http.StatusInternalServerError)
+	}
+
+	pkg.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +118,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
+		log.Printf("error: %v", err)
 		pkg.WriteError(w, "error creating user", http.StatusInternalServerError)
 		return
 	}
