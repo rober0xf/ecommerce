@@ -30,8 +30,8 @@ func TestUserHandler(t *testing.T) {
 	userStore := &mockUserStore{}
 	handler := NewHandler(userStore) // we need to define all the methods of the interface
 
-	t.Run("should fail if the payload is invalid", func(t *testing.T) {
-		payload := models.Payload{
+	t.Run("invalid payload", func(t *testing.T) {
+		payload := models.PayloadRegister{
 			Name:     "namee",
 			LastName: "lastname",
 			Email:    "invalid_email",
@@ -40,7 +40,7 @@ func TestUserHandler(t *testing.T) {
 
 		marshalled, err := json.Marshal(payload) // convert the struct to a valid json
 		if err != nil {
-			t.Errorf("failed to marshal payload: %v", err)
+			t.Fatalf("failed to marshal payload: %v", err)
 		}
 
 		req, err := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(marshalled))
@@ -64,8 +64,8 @@ func TestRegisterUser(t *testing.T) {
 	userStore := &mockUserStore{}
 	handler := NewHandler(userStore)
 
-	t.Run("should fail if it doesnt register the user", func(t *testing.T) {
-		payload := models.Payload{
+	t.Run("register user", func(t *testing.T) {
+		payload := models.PayloadRegister{
 			Name:     "testing",
 			LastName: "testingtesting",
 			Email:    "valid@mail.com",
@@ -74,7 +74,7 @@ func TestRegisterUser(t *testing.T) {
 
 		marshalled, err := json.Marshal(payload)
 		if err != nil {
-			t.Errorf("failed to marshal payload: %v", err)
+			t.Fatalf("failed to marshal payload: %v", err)
 		}
 
 		req, err := http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(marshalled))

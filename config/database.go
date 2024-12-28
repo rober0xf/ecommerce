@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"time"
-	"github.com/joho/godotenv"
 )
 
 func LoadEnv() {
