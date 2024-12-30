@@ -6,29 +6,28 @@ import (
 	"ecommerce/internal/core/services"
 	"ecommerce/pkg"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
 
 var ValidateStruct = validator.New()
 
-type Handler struct {
+type UserHandler struct {
 	Store models.UserStore
 }
 
-func NewHandler(store models.UserStore) *Handler {
-	return &Handler{Store: store}
+func NewUserHandler(store models.UserStore) *UserHandler {
+	return &UserHandler{Store: store}
 }
 
-func (h *Handler) InitRoutes(router *mux.Router) {
-	router.HandleFunc("/login", h.handleLogin).Methods(http.MethodPost)
+func (h *UserHandler) RegisterUserRoutes(router *mux.Router) {
 	router.HandleFunc("/register", h.handleRegister).Methods(http.MethodPost)
+	router.HandleFunc("/login", h.handleLogin).Methods(http.MethodPost)
 }
 
-func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		pkg.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -75,7 +74,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	pkg.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
 }
 
-func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		pkg.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return

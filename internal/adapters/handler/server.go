@@ -3,9 +3,9 @@ package handler
 import (
 	"ecommerce/internal/adapters/repository"
 	"fmt"
-	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"net/http"
 )
 
 type APIServer struct {
@@ -20,9 +20,13 @@ func NewAPIServer(addr string, db *pgxpool.Pool) *APIServer {
 func (s *APIServer) Start() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api").Subrouter()
-    userStore := repository.NewStore(s.db)
-    userHandler := NewHandler(userStore)
-	userHandler.InitRoutes(subrouter)
+	userStore := repository.NewUserStore(s.db)
+	userHandler := NewUserHandler(userStore)
+	userHandler.RegisterUserRoutes(subrouter)
+
+	productStore := repository.NewProductStore(s.db)
+	productHandler := NewProductHandler(productStore)
+	productHandler.RegisterProductRoutes(subrouter)
 
 	fmt.Print("running on port", s.addr)
 	return http.ListenAndServe(s.addr, router)

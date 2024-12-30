@@ -13,11 +13,27 @@ type User struct {
 	CreateAt time.Time `json:"created_at"`
 }
 
+type Product struct {
+	ID          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       float64   `json:"price"`
+	Stock       int       `json:"stock"`
+	Category    string    `json:"category"`
+	Status      string    `json:"status"`
+	CreateAt    time.Time `json:"created_at"`
+}
+
 // easier to test
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByID(id int) (*User, error)
 	CreateUser(user *User) error
+}
+
+type ProductStore interface {
+	GetProducts() ([]*Product, error) // we must use a slice of pointers
+	CreateProduct() (*Product, error)
 }
 
 type PayloadRegister struct {
